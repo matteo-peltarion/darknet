@@ -1624,7 +1624,7 @@ void calc_anchors(char *datacfg, int num_of_clusters, int width, int height, int
 
 
 void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filename, float thresh,
-    float hier_thresh, int dont_show, int ext_output, int save_labels, char *outfile, int letter_box, int benchmark_layers)
+    float hier_thresh, int dont_show, int ext_output, int save_labels, char *outdir, char *outfile, int letter_box, int benchmark_layers)
 {
     list *options = read_data_cfg(datacfg);
     char *name_list = option_find_str(options, "names", "data/names.list");
@@ -1726,7 +1726,7 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
         // Original!
         // save_image(im, "predictions");
 
-        sprintf(out_filename_buff, "prediction_%d", idx);
+        sprintf(out_filename_buff, "%s/prediction_%d", outdir, idx);
         save_image(im, out_filename_buff);
 
         if (!dont_show) {
@@ -2051,8 +2051,10 @@ void run_detector(int argc, char **argv)
     if (weights)
         if (strlen(weights) > 0)
             if (weights[strlen(weights) - 1] == 0x0d) weights[strlen(weights) - 1] = 0;
-    char *filename = (argc > 6) ? argv[6] : 0;
-    if (0 == strcmp(argv[2], "test")) test_detector(datacfg, cfg, weights, filename, thresh, hier_thresh, dont_show, ext_output, save_labels, outfile, letter_box, benchmark_layers);
+    char *filename = (argc > 7) ? argv[7] : 0;
+    char *outdir = argv[6];
+
+    if (0 == strcmp(argv[2], "test")) test_detector(datacfg, cfg, weights, filename, thresh, hier_thresh, dont_show, ext_output, save_labels, outdir, outfile, letter_box, benchmark_layers);
     else if (0 == strcmp(argv[2], "train")) train_detector(datacfg, cfg, weights, gpus, ngpus, clear, dont_show, calc_map, thresh, iou_thresh, mjpeg_port, show_imgs, benchmark_layers, chart_path);
     else if (0 == strcmp(argv[2], "valid")) validate_detector(datacfg, cfg, weights, outfile);
     else if (0 == strcmp(argv[2], "recall")) validate_detector_recall(datacfg, cfg, weights);
