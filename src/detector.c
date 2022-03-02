@@ -1646,6 +1646,13 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
         if (net.layers[net.n - 1].classes > names_size) getchar();
     }
     srand(2222222);
+
+    // To write a different file name for each prediction
+    char out_filename_buff[256];
+
+    // Keep track of indexes to have different names
+    int idx = 0;
+
     char buff[256];
     char *input = buff;
     char *json_buf = NULL;
@@ -1662,6 +1669,10 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
     int j;
     float nms = .45;    // 0.4F
     while (1) {
+        //
+        // Increase index of image
+        idx++;
+
         if (filename) {
             strncpy(input, filename, 256);
             if (strlen(input) > 0)
@@ -1711,7 +1722,13 @@ void test_detector(char *datacfg, char *cfgfile, char *weightfile, char *filenam
             else diounms_sort(dets, nboxes, l.classes, nms, l.nms_kind, l.beta_nms);
         }
         draw_detections_v3(im, dets, nboxes, thresh, names, alphabet, l.classes, ext_output);
-        save_image(im, "predictions");
+
+        // Original!
+        // save_image(im, "predictions");
+
+        sprintf(out_filename_buff, "prediction_%d", idx);
+        save_image(im, out_filename_buff);
+
         if (!dont_show) {
             show_image(im, "predictions");
         }
